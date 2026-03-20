@@ -39,6 +39,7 @@ def start_weeing(build_name: str, start_hour: int, start_minute: int):
     
     def run_build():
         start_weeing_process(build_name, start_hour, start_minute)
+    
 
     # 새 thread로 빌드 실행
     t = threading.Thread(target=run_build, daemon=True)
@@ -66,7 +67,10 @@ def get_running_build():
         else:
             return {"resp": -1, "message": "No build is currently running."}
 
-
+@weeing_router.post("/stop", summary="위잉 중지")
+def stop_weeing():
+    cleanup_weeing()
+    return {"resp": 0, "message": "Weeing stopped."}
 # ───────────── Process API Endpoints ─────────────
 
 @app.get("/pid", summary="빌드 프로세스 PID 조회")
