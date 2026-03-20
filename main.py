@@ -75,7 +75,7 @@ def get_pid():
     pid = get_weeing_pid()
     if pid is None:
         return {"resp": -1, "message": "No running process."}
-    return {"resp": 0, "pid": pid}
+    return {"resp": pid, "message": f"Current PID: {pid}"}
 
 @app.post("/goto_point", summary="지정 위치로 이동")
 def api_goto_point(x:int, y:int, tolerance:int=1):
