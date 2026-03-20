@@ -81,7 +81,6 @@ def get_pid():
 def api_goto_point(x:int, y:int, tolerance:int=1):
     try :
         system = get_running_build().get("system", {})
-        print(system)
         if not system :
             return {"resp": -1, "message": "No running build system found."}
         goto_point(x, y, tolerance, stack=0, system=system)

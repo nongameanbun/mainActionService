@@ -11,7 +11,6 @@ class Timer:
     def initialization(self):
         for key, value in self.cooltime_records.items():
             self.time_records[key] = 0
-        # print(self.cooltime_records)
     
     def is_time_passed(self, skill_name):
         current = time.time()
