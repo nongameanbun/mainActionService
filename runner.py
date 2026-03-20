@@ -49,8 +49,7 @@ class BuildRunner():
         rune_chase(system=self.system)
 
     def handle_elbo(self, func):
-        if get_status('elbo') >= 0.8:
-            print("[handle_elbo] elbo >= 0.8 → func() 호출")
+        if get_status('elbo') >= 0.8 :
             func()
 
     def human_exceptions(self) :
@@ -58,7 +57,6 @@ class BuildRunner():
 
     def preprocess(self):
         """프로세스 진입 후 실행되는 사전 동작 (시간 대기는 포함하지 않음)"""
-        print("[preprocess] 사냥 준비 동작 시작")
         Rdelay_2(1000)
         press_key("up")
         Rdelay_2(100)
@@ -193,7 +191,6 @@ def start_weeing_process(build_name: str, start_hour: int | None = None, start_m
         weeing_process = proc
         running_threads.clear()
         running_threads.append(build_name)
-        print(f"[start_weeing_process] Spawned PID={proc.pid}")
         return True
 
 
