@@ -6,25 +6,25 @@ from utils.position import *
 
 def autorune(stack=0) :
     if(stack >= 4):
-        assert False, "Autorune failed after 4 attempts"
+        send_message("Autorune failed after 4 attempts.")
+        return
 
     Rdelay_2(100)
     press_key_with_delay("space", 100)
 
     Rdelay_2(500)
 
-    try :
-        res = solve_rune()
+    res = solve_rune()
+    print(res)
 
-        if len(res) != 4 :
-            autorune(stack=stack+1)
-
-        for arrow in res:
-            press_key_with_delay(arrow, 100)
-            Rdelay(200)
-    
-    except Exception as e:
+    if res is None or len(res) != 4 :
+        print("Rune solution is not complete. Retrying...")
         time.sleep(4)
+        autorune(stack=stack+1)
+
+    for arrow in res:
+        press_key_with_delay(arrow, 100)
+        Rdelay(200)        
         
 
 def rune_chase(system):
