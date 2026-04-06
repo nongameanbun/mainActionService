@@ -21,6 +21,7 @@ def autorune(stack=0) :
         print("Rune solution is not complete. Retrying...")
         time.sleep(4)
         autorune(stack=stack+1)
+        return
 
     for arrow in res:
         press_key_with_delay(arrow, 100)
