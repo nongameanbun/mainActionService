@@ -55,6 +55,22 @@ def do_movement(movement, direction, system) :
         
     def doublejump_R(command_key) :
         doublejump("right", command_key)
+
+    def tel_left(command_key) :
+        press_key("left")
+        Rdelay_2(50)
+        press_key_with_delay(system['tel_key'], 50)
+        release_key("left")
+        press_key_with_delay(command_key, 150)
+        Rdelay_2(200)
+
+    def tel_right(command_key) :
+        press_key("right")
+        Rdelay_2(50)
+        press_key_with_delay(system['tel_key'], 50)
+        release_key("right")
+        press_key_with_delay(command_key, 150)
+        Rdelay_2(200)
         
     main_attack_key = system['main_attack_key']
     if movement == "jump2" :
@@ -62,6 +78,15 @@ def do_movement(movement, direction, system) :
             doublejump_L(main_attack_key)
         elif(direction == "right") :
             doublejump_R(main_attack_key)
+        else :
+            assert False, "Invalid Direction"
+        return
+    
+    elif movement == "tel" :
+        if (direction == "left") :
+            tel_left(main_attack_key)
+        elif (direction == "right") :
+            tel_right(main_attack_key)
         else :
             assert False, "Invalid Direction"
         return
