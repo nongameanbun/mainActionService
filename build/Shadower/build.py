@@ -95,3 +95,86 @@ class Shadower_FireLib3(Shadower_Build) :
             self.timer.skill_used('origin')
         pass
 
+class Shadower_SungMoon_4(Shadower_Build) :
+    def __init__(self) :
+        super().__init__()
+        self.name = "Shadower_SungMoon_4"
+        self.pos = [(53, 126)]
+
+    
+    def reso(self, direction):
+        
+        Rdelay_2(100)
+        press_key_with_delay(self.buildSystem['rope_key'], 100)
+        Rdelay_2(300)
+        Rdelay_2(100)
+
+
+    def loop(self) :
+        def cycle() :
+            
+            for i in range(8) :
+                pos = check_pos()
+                if pos[0] > 150 and pos[0] != 1050  :
+                    break
+                doublejump_R("s")
+                meic()
+
+            self.reso("up")
+
+            for i in range(8) :
+                pos = check_pos()
+                if pos[0] < 20 and pos[0] != 1050  :
+                    break
+                doublejump_L("s")
+                meic()
+            
+        ## 위잉 전체 빌드 ##
+        cycle()
+        if self.timer.is_time_passed('buff') :
+                    
+            Rdelay_2(300)
+            press_key_with_delay("num2", 300)
+            Rdelay_2(200)
+            self.timer.skill_used('buff')
+
+        if self.timer.is_time_passed('fountain') :
+            goto_point(self.pos[0][0], self.pos[0][1], tolerance = 1, system=self.buildSystem)
+            Rdelay_2(1000)
+            prev = check_pos()
+            for i in range(3) :                
+                press_key_with_delay("up", 200)
+                Rdelay_2(800)
+                cur = check_pos()
+                if prev != cur :
+                    break
+
+            Rdelay_2(200)
+            press_key_with_delay("left", 30)
+            Rdelay_2(200)
+            
+            press_key_with_delay("num6", 200)
+            Rdelay_2(300)
+
+            prev = check_pos()
+            for i in range(3) :                
+                press_key_with_delay("up", 200)
+                Rdelay_2(800)
+                cur = check_pos()
+                if prev != cur :
+                    break
+            
+            press_key_with_delay("right", 100)
+            Rdelay_2(200)
+            press_key_with_delay("num4", 200)
+            Rdelay_2(500)
+
+            self.timer.skill_used('fountain')
+        ###################
+
+    def elbo(self) :
+        if self.timer.is_time_passed('origin') :
+            press_key_with_delay(self.buildSystem['originkey'], 100)
+            Rdelay_2(7000)
+            self.timer.skill_used('origin')
+        pass

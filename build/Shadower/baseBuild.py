@@ -20,7 +20,7 @@ class Shadower_Build(AbstractBuild) :
             "inven_key" : "i",
             "battle_statistics_key" : "num_minus",
             "ascent_key" : "f3",
-            "ascent_num" : 0,
+            "ascent_num" : 1,
 
             "dead_potion_key" : "f6",
             "millage_key" : "f7",
