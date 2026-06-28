@@ -3,6 +3,120 @@ from build.Len.skill import *
 from gateway import *
 from utils.position import *
 
+class Len_FireLib_3(Len_Build) :
+    def __init__(self) :
+        super().__init__()
+        self.name = "Len_FireLib_3"
+
+    def loop(self) :
+        def cycle() :
+
+            press_key_with_delay("left", 100)
+
+            Rdelay_2(100)
+            doublejump_L("s")
+            
+            Rdelay_2(100)
+
+            press_key("s")
+            Rdelay_2(100)
+            if prob(70):
+                release_key("s")
+                if self.timer.is_time_passed('manghon') :
+                    for _ in range(4) :
+                        pos = check_pos()
+                        if pos[0] < 15 and pos[0] != 1050  :
+                            break             
+                        doublejump_L("q")
+                        Rdelay_2(250)
+                    self.timer.skill_used('manghon')
+                Rdelay_2(500)
+                press_key("s")
+
+            prev = None
+            for _ in range(8) :
+                pos = check_pos()
+                if pos[0] < 15 and pos[0] != 1050  :
+                    break
+
+                if prev == None :
+                    pass
+                elif prev[0] < pos[0] :
+                    press_key_with_delay("left", 100)
+                    Rdelay_2(100)
+                
+                prev = pos
+                doublejump_only()
+                Rdelay_2(250)
+            
+            release_key("s")
+
+
+            press_key_with_delay("right", 100)
+            Rdelay_2(100)
+
+            if prob(20) :
+                press_key_with_delay("a", 200)
+                Rdelay_2(300)
+
+            press_key("s")
+            Rdelay_2(100)
+            if prob(70):
+                release_key("s")
+                if self.timer.is_time_passed('manghon') :
+                    for _ in range(4) :                    
+                        pos = check_pos()
+                        if pos[0] > 145 and pos[0] != 1050  :
+                            break
+                        doublejump_R("q")
+                        Rdelay_2(250)
+                    self.timer.skill_used('manghon')
+                Rdelay_2(500)
+                press_key("s")
+
+            prev = None
+            for _ in range(8) :
+                pos = check_pos()
+                if pos[0] > 145 and pos[0] != 1050  :
+                    break
+                
+                if prev == None :
+                    pass
+                elif prev[0] >= pos[0] :
+                    press_key_with_delay("right", 100)
+                    Rdelay_2(100)
+
+                prev = pos
+                doublejump_only()
+                Rdelay_2(250)
+
+            release_key("s")
+            Rdelay_2(200)
+            press_key_with_delay("z", 100)
+            Rdelay_2(700)
+
+
+            
+
+            
+                
+            
+        ## 위잉 전체 빌드 ##
+        cycle()
+        if self.timer.is_time_passed('buff') :
+            Rdelay_2(300)
+            press_key_with_delay("num1", 300)
+            Rdelay_2(200)
+            self.timer.skill_used('buff')
+
+        ###################
+
+    def elbo(self) :
+        if self.timer.is_time_passed('origin') :
+            press_key_with_delay("num2", 100)
+            Rdelay_2(7000)
+            self.timer.skill_used('origin')
+        pass
 
 class Len_Sungmoon4(Len_Build) :
     def __init__(self) :

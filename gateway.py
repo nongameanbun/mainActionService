@@ -20,6 +20,7 @@ streaning_API_URL       = f"http://127.0.0.1:{int(os.getenv('streaning_API_PORT'
 objectDetector_API_URL  = f"http://127.0.0.1:{int(os.getenv('objectDetector_API_PORT'))}"
 runeSolver_API_URL      = f"http://127.0.0.1:{int(os.getenv('runeSolver_API_PORT'))}"
 agentServer_API_URL     = f"http://127.0.0.1:{int(os.getenv('agentServer_API_PORT'))}"
+violSolver_API_URL      = f"http://127.0.0.1:{int(os.getenv('violSolver_API_PORT'))}"
 
 
 # ─── helpers ───
@@ -67,7 +68,8 @@ def _post_and_wait(url: str) -> None:
             raise ValueError(f"POST {_post_and_wait.__name__} got no 'resp' value")
         __precise_wait(int(resp) / 1000, start_t)
     except Exception as e:
-        print(f"[gateway] _post_and_wait failed: {e}")
+        # print(f"[gateway] _post_and_wait failed: {e}")
+        pass
 
 # ─── inputHandler ───
 
@@ -240,33 +242,56 @@ def suspend_main():
     proc = get_main_process()
     if proc:
         proc.suspend()
-        print(f"[process] Suspended PID {proc.pid}")
+        # print(f"[process] Suspended PID {proc.pid}")
         return True
-    print("[process] No main process to suspend")
+    # print("[process] No main process to suspend")
     return False
 
 def resume_main():
     proc = get_main_process()
     if proc:
         proc.resume()
-        print(f"[process] Resumed PID {proc.pid}")
+        # print(f"[process] Resumed PID {proc.pid}")
         return True
-    print("[process] No main process to resume")
+    # print("[process] No main process to resume")
     return False
 
 def kill_main():
     proc = get_main_process()
     if proc:
         proc.kill()
-        print(f"[process] Killed PID {proc.pid}")
+        # print(f"[process] Killed PID {proc.pid}")
         _safe_post(f"{mainAction_API_URL}/weeing/stop")
         return True
-    print("[process] No main process to kill")
+    # print("[process] No main process to kill")
     return False
 
 def _goto_point(x, y, tolerance = 1):
     resp = _safe_post(f"{mainAction_API_URL}/goto_point?x={x}&y={y}&tolerance={tolerance}")
     assert resp == -1, "Failed goto_point"
+
+# ─── violSolver ───
+
+def viol_ready() -> None:
+    _safe_post(f"{violSolver_API_URL}/ready")
+
+def viol_appear() -> dict | None:
+    return _safe_post(f"{violSolver_API_URL}/appear")
+
+def viol_shuffle_start() -> dict | None:
+    return _safe_post(f"{violSolver_API_URL}/shuffle_start")
+
+def viol_shuffle_stop() -> dict | None:
+    return _safe_post(f"{violSolver_API_URL}/shuffle_stop")
+
+def viol_game_end() -> None:
+    _safe_post(f"{violSolver_API_URL}/game_end")
+
+def viol_exception() -> None:
+    _safe_post(f"{violSolver_API_URL}/exception")
+
+def viol_status() -> dict | None:
+    return _safe_get(f"{violSolver_API_URL}/status")
 
 # ─── agentServer ───
 
@@ -279,12 +304,12 @@ def stop_agent_jobs():
     for job in jobs:
         if job.get("status") == "running":
             job_id = job.get("job_id")
-            print(f"[gateway] Stopping agent job: {job_id}")
+            # print(f"[gateway] Stopping agent job: {job_id}")
             # DELETE /chat/background/stop/{job_id}
             try:
                 requests.delete(f"{agentServer_API_URL}/chat/background/stop/{job_id}", timeout=5)
             except Exception as e:
-                print(f"[gateway] Failed to stop agent job {job_id}: {e}")
+                pass  # print(f"[gateway] Failed to stop agent job {job_id}: {e}")
 
 
 # ─── misc ───
@@ -311,4 +336,4 @@ def reset_external_states():
             Error_list.append(func.__name__)
 
     if Error_list:
-        print(f"[gateway] WARNING: reset_external_states had errors in: {', '.join(Error_list)}")
+        pass  # print(f"[gateway] WARNING: reset_external_states had errors in: {', '.join(Error_list)}")
