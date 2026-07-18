@@ -109,6 +109,10 @@ def Rdelay(delay: int) -> None:
 def Rdelay_2(delay: int) -> None:
     Rdelay(delay)
 
+def get_clipboard() -> str:
+    res = _safe_get(f"{inputHandler_API_URL}/clipboard/get")
+    return res if res is not None else ""
+
 # ─── statusChecker ───
 
 @overload
