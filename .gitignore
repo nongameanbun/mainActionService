@@ -31,3 +31,6 @@ ENV/
 
 # ===== 빌드 산출물 =====
 build/FinalBuild.py
+
+# ===== 노트북 (로컬 테스트용, 버전관리 제외) =====
+test.ipynb
