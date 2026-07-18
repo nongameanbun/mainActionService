@@ -8,6 +8,7 @@ class Lete_Firelib3(Lete_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Lete_Firelib3"
+        self.deadspot = [860, 242]
         self.pos = [(94, 117)]
 
     def loop(self) :
@@ -111,6 +112,7 @@ class Lete_Winter4(Lete_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Lete_Winter4"
+        self.deadspot = [905, 341]
         self.pos = [(100, 116)]
 
     def loop(self) :

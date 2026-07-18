@@ -109,6 +109,7 @@ class Adele_Limen2_5(Adele_Build) :
 class Adele_FireLib3(Adele_Build) :
     def __init__(self) :
         super().__init__()
+        self.deadspot = [860, 242]
         self.name = "Adele_FireLib3"
 
     def loop(self) :
@@ -157,6 +158,7 @@ class Adele_SungMoon_4(Adele_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Adele_SungMoon_4"
+        self.deadspot = [515, 453]
         self.pos = [(53, 126)]
 
     def loop(self) :
@@ -225,6 +227,7 @@ class Adele_Winter_4(Adele_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Adele_Winter_4"
+        self.deadspot = [905, 341]
         self.pos = [(39, 101), (166, 101)]
 
     def loop(self) :

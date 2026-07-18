@@ -7,6 +7,7 @@ class Len_FireLib_3(Len_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Len_FireLib_3"
+        self.deadspot = [860, 242]
 
     def loop(self) :
         def cycle() :
@@ -256,6 +257,7 @@ class Len_Winter_4(Len_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Len_Winter_4"
+        self.deadspot = [905, 341]
         self.pos = [(39, 101), (166, 101)]
 
     def loop(self) :
@@ -361,3 +363,4 @@ class Len_Winter_4(Len_Build) :
             Rdelay_2(7000)
             self.timer.skill_used('origin')
         pass
+        

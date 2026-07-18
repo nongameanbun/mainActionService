@@ -40,8 +40,6 @@ def handle_gohome() :
         send_message("Gohome Failed.")
         exit(0)
 
-    exit(0)
-
 
 def do_human_exceptions(system) :
     battle_statistics_key = system['battle_statistics_key']

@@ -22,9 +22,14 @@ running_threads = []           # 현재 실행 중인 빌드 이름
 class BuildRunner():
     def __init__(self, **kwargs):
         self.system = kwargs.get('system', None)
+        self.build = kwargs.get('build', None)
 
         if not self.system :
             assert False, "[BuildRunner.__init__] ERROR: system parameter is required"
+
+        assert self.build is not None, "[BuildRunner.__init__] ERROR: build parameter is required"
+        assert getattr(self.build, 'deadspot', None), "[BuildRunner.__init__] ERROR: build must define 'deadspot'"
+        self.deadspot = self.build.deadspot
 
         try :
             self.movement = self.system['movement']
@@ -42,17 +47,40 @@ class BuildRunner():
             self.doping_key = self.system['doping_key']
             self.millage_key = self.system['millage_key']
             self.elbo_reward_key = self.system['elbo_reward_key']
+            self.dead_potion_key = self.system['dead_potion_key']
         except Exception as e :
             assert False, f"[BuildRunner.__init__] ERROR: system parameter missing keys: {e}"
 
-    def rune_solver(self):
+    def handle_rune(self):
         rune_chase(system=self.system)
 
     def handle_elbo(self, func):
         if get_status('elbo') >= 0.8 :
             func()
 
-    def human_exceptions(self) :
+    def handle_dead(self):
+        if get_status('dead') >= 0.8 :
+            releaseAll()
+            Rdelay_2(500)
+            press_key_with_delay(self.npc_key, 2000)
+            Rdelay_2(5000)
+            ## 이러면 마을로 돌아올 것임
+
+            press_key_with_delay(self.dead_potion_key, 200)
+            Rdelay_2(5000)
+
+            mouse_click('left', 50, random.randint(135, 143), random.randint(45, 50))
+            Rdelay_2(2000)
+
+            _x, _y = self.deadspot
+            for _ in range(2):
+                mouse_click('left', 30, _x, _y)
+            Rdelay_2(1000)
+            press_key_with_delay("enter", 100)
+
+            reset_external_states()
+
+    def handle_human_exceptions(self) :
         do_human_exceptions(self.system)
 
     def preprocess(self):
@@ -66,42 +94,72 @@ class BuildRunner():
 
         return True
 
+    def postprocess(self):
+        Rdelay_2(10000)
+        mouse_click('left', 50, random.randint(331, 341), random.randint(770, 780))
+        Rdelay_2(30000)
+        mouse_click('left', 50, random.randint(1343, 1350), random.randint(53, 60))
+        Rdelay_2(10000)
+
+    def handle_exp_cycle(self, running_build):
+        if running_build.timer.is_time_passed('exp') :
+            Rdelay_2(500)
+            press_key_with_delay(running_build.buildSystem["millage_key"], 200)
+            Rdelay_2(500)
+            for _ in range(2) :
+                press_key_with_delay(running_build.buildSystem["elbo_reward_key"], 200)
+                Rdelay_2(500)
+
+            cur_cycle = get_exp_cycle()
+            if cur_cycle == 0:
+                set_exp_cycle(10)
+                handle_gohome()
+                return True
+            else :
+                releaseAll()
+                Rdelay_2(500)
+                press_key_with_delay(running_build.buildSystem["doping_key"], 200)
+                Rdelay_2(300)
+
+                running_build.timer.skill_used('exp')
+                send_message(f"{cur_cycle} cycle left")
+
+                set_exp_cycle(cur_cycle-1)
+                return False
+            
+    def handle_loop(self, running_build):
+        try:
+            running_build.loop()
+        except Exception as loop_error:
+            dead_status = get_status('dead')
+            print(f"[handle_loop] loop() raised (dead_status={dead_status}): {loop_error}")
+            if dead_status >= 0.8:
+                print(f"[_run] loop() interrupted by death: {loop_error}")
+                self.handle_dead()
+                return True
+            raise
+        return False
+
     def _run(self, running_build):
         running_build.setup()
+        success = True
 
         try:
             while True:
+                self.handle_dead()
+
                 self.handle_elbo(running_build.elbo)
-                
-                self.rune_solver()
-                
-                self.human_exceptions()
 
-                running_build.loop()
+                self.handle_rune()
 
-                if running_build.timer.is_time_passed('exp') :
-                    Rdelay_2(500)
-                    press_key_with_delay(running_build.buildSystem["millage_key"], 200)
-                    Rdelay_2(500)
-                    for _ in range(2) :
-                        press_key_with_delay(running_build.buildSystem["elbo_reward_key"], 200)
-                        Rdelay_2(500)
+                self.handle_human_exceptions()
 
-                    cur_cycle = get_exp_cycle()
-                    if cur_cycle == 0:
-                        set_exp_cycle(10)
-                        handle_gohome()
-                    else :
-                        releaseAll()
-                        Rdelay_2(500)
-                        press_key_with_delay(running_build.buildSystem["doping_key"], 200)
-                        Rdelay_2(300)
+                if self.handle_loop(running_build) :
+                    continue
 
-                        running_build.timer.skill_used('exp')
-                        send_message(f"{cur_cycle} cycle left")
-
-                        set_exp_cycle(cur_cycle-1)
-                        
+                if self.handle_exp_cycle(running_build) :
+                    print("[_run] Cycle completed. Exiting loop.")
+                    break
 
                 if prob(10):
                     gc.collect()
@@ -111,12 +169,15 @@ class BuildRunner():
             send_message(f"Error in build runner: {error}")
             print(traceback.format_exc())
             stop_agent_jobs()
+            success = False
 
 
         finally:
             print("[_run] FINALLY releaseAll()")
             releaseAll()
             print("[_run] EXIT")
+
+        return success
 
 
 def _weeing_worker(build_name: str):
@@ -131,6 +192,7 @@ def _weeing_worker(build_name: str):
 
     build_runner = BuildRunner(
         system=running_build.buildSystem,
+        build=running_build,
     )
 
     # 외부 서비스 상태 초기화
@@ -138,13 +200,12 @@ def _weeing_worker(build_name: str):
 
     # statusChecker 감지 시작
     capture_on()
-
     on()
 
-    build_runner.preprocess()
-
     try:
-        build_runner._run(running_build)
+        build_runner.preprocess()
+        if build_runner._run(running_build):
+            build_runner.postprocess()
     except Exception as e:
         send_message(f"Error in build runner: {e}")
         stop_agent_jobs()

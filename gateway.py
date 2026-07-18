@@ -1,6 +1,6 @@
 from random import random
 import time
-from typing import Any, List
+from typing import Any, List, overload
 import dotenv
 import os
 import requests
@@ -111,6 +111,10 @@ def Rdelay_2(delay: int) -> None:
 
 # ─── statusChecker ───
 
+@overload
+def get_status(mode: str) -> float: ...
+@overload
+def get_status(mode: None = None) -> dict: ...
 def get_status(mode : str | None = None) -> float | dict:
     resp = _safe_get(f"{statusChecker_API_URL}/status/get")
 

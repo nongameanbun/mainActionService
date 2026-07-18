@@ -99,6 +99,7 @@ class Shadower_SungMoon_4(Shadower_Build) :
     def __init__(self) :
         super().__init__()
         self.name = "Shadower_SungMoon_4"
+        self.deadspot = [515, 453]
         self.pos = [(53, 126)]
 
     
