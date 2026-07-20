@@ -61,6 +61,7 @@ class BuildRunner():
     def handle_dead(self):
         if get_status('dead') >= 0.8 :
             releaseAll()
+            send_message("캐릭터 사망 감지 → 부활 처리")
             Rdelay_2(500)
             press_key_with_delay(self.npc_key, 2000)
             Rdelay_2(5000)
@@ -69,12 +70,12 @@ class BuildRunner():
             press_key_with_delay(self.dead_potion_key, 200)
             Rdelay_2(5000)
 
-            mouse_click('left', 50, random.randint(135, 143), random.randint(45, 50))
+            mouse_click('left', 50, random.randint(145, 150), random.randint(47, 50))
             Rdelay_2(2000)
 
-            _x, _y = self.deadspot
+            [_x, _y] = self.deadspot
             for _ in range(2):
-                mouse_click('left', 30, _x, _y)
+                mouse_click('left', 50, _x, _y)
             Rdelay_2(1000)
             press_key_with_delay("enter", 100)
 
@@ -136,9 +137,8 @@ class BuildRunner():
             if dead_status >= 0.8:
                 print(f"[_run] loop() interrupted by death: {loop_error}")
                 self.handle_dead()
-                return True
+                Rdelay_2(1000)
             raise
-        return False
 
     def _run(self, running_build):
         running_build.setup()
@@ -146,6 +146,8 @@ class BuildRunner():
 
         try:
             while True:
+                self.handle_loop(running_build)
+
                 self.handle_dead()
 
                 self.handle_elbo(running_build.elbo)
@@ -153,10 +155,7 @@ class BuildRunner():
                 self.handle_rune()
 
                 self.handle_human_exceptions()
-
-                if self.handle_loop(running_build) :
-                    continue
-
+               
                 if self.handle_exp_cycle(running_build) :
                     print("[_run] Cycle completed. Exiting loop.")
                     break
