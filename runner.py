@@ -61,7 +61,7 @@ class BuildRunner():
     def handle_dead(self):
         if get_status('dead') >= 0.8 :
             releaseAll()
-            send_message("캐릭터 사망 감지 → 부활 처리")
+            send_message("캐릭터 사망 감지 → 부활 처리", severity="middle")
             Rdelay_2(500)
             press_key_with_delay(self.npc_key, 2000)
             Rdelay_2(5000)
@@ -165,7 +165,7 @@ class BuildRunner():
 
 
         except Exception as error:
-            send_message(f"Error in build runner: {error}")
+            send_message(f"Error in build runner: {error}", severity="high")
             print(traceback.format_exc())
             stop_agent_jobs()
             success = False
@@ -206,7 +206,7 @@ def _weeing_worker(build_name: str):
         if build_runner._run(running_build):
             build_runner.postprocess()
     except Exception as e:
-        send_message(f"Error in build runner: {e}")
+        send_message(f"Error in build runner: {e}", severity="high")
         stop_agent_jobs()
 
     finally:
