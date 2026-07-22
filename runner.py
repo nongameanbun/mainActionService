@@ -60,26 +60,33 @@ class BuildRunner():
 
     def handle_dead(self):
         if get_status('dead') >= 0.8 :
-            releaseAll()
-            send_message("캐릭터 사망 감지 → 부활 처리", severity="middle")
-            Rdelay_2(500)
-            press_key_with_delay(self.npc_key, 2000)
-            Rdelay_2(5000)
-            ## 이러면 마을로 돌아올 것임
+            exp_watch_pause()
+            try:
+                releaseAll()
+                send_message("캐릭터 사망 감지 → 부활 처리", severity="middle")
+                Rdelay_2(500)
+                press_key_with_delay(self.npc_key, 2000)
+                Rdelay_2(5000)
+                ## 이러면 마을로 돌아올 것임
 
-            press_key_with_delay(self.dead_potion_key, 200)
-            Rdelay_2(5000)
+                press_key_with_delay(self.dead_potion_key, 200)
+                Rdelay_2(5000)
 
-            mouse_click('left', 50, random.randint(145, 150), random.randint(47, 50))
-            Rdelay_2(2000)
+                mouse_click('left', 50, random.randint(145, 150), random.randint(47, 50))
+                Rdelay_2(2000)
 
-            [_x, _y] = self.deadspot
-            for _ in range(2):
-                mouse_click('left', 50, _x, _y)
-            Rdelay_2(1000)
-            press_key_with_delay("enter", 100)
+                [_x, _y] = self.deadspot
+                for _ in range(2):
+                    mouse_click('left', 50, _x, _y)
+                Rdelay_2(1000)
+                press_key_with_delay("enter", 100)
+            finally:
+                exp_watch_resume()
 
+            # reset_external_states()가 capture_off로 끝나므로, 감지를 이어가려면 명시적으로 다시 켜야 함
+            # (안 하면 사망 이후 liecheck/viol/shape/elbo/dead 감지가 세션 내내 꺼진 채로 남는 기존 버그)
             reset_external_states()
+            capture_on()
 
     def handle_human_exceptions(self) :
         do_human_exceptions(self.system)
@@ -96,11 +103,15 @@ class BuildRunner():
         return True
 
     def postprocess(self):
-        Rdelay_2(10000)
-        mouse_click('left', 50, random.randint(331, 341), random.randint(770, 780))
-        Rdelay_2(30000)
-        mouse_click('left', 50, random.randint(1343, 1350), random.randint(53, 60))
-        Rdelay_2(10000)
+        exp_watch_pause()
+        try:
+            Rdelay_2(10000)
+            mouse_click('left', 50, random.randint(331, 341), random.randint(770, 780))
+            Rdelay_2(30000)
+            mouse_click('left', 50, random.randint(1343, 1350), random.randint(53, 60))
+            Rdelay_2(10000)
+        finally:
+            exp_watch_resume()
 
     def handle_exp_cycle(self, running_build):
         if running_build.timer.is_time_passed('exp') :
@@ -114,7 +125,11 @@ class BuildRunner():
             cur_cycle = get_exp_cycle()
             if cur_cycle == 0:
                 set_exp_cycle(10)
-                handle_gohome()
+                exp_watch_pause()
+                try:
+                    handle_gohome()
+                finally:
+                    exp_watch_resume()
                 return True
             else :
                 releaseAll()
@@ -123,7 +138,7 @@ class BuildRunner():
                 Rdelay_2(300)
 
                 running_build.timer.skill_used('exp')
-                send_message(f"{cur_cycle} cycle left")
+                send_message(f"[{running_build.build_name}] {cur_cycle} cycle left")
 
                 set_exp_cycle(cur_cycle-1)
                 return False

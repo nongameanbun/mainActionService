@@ -32,19 +32,23 @@ def rune_chase(system):
     rune = check_rune()
     if rune!=None:
         print("Rune detected. Moving toward the Rune...")
-        
-        threading.Thread(target=awake_rune_solver).start()
 
-        goto_point(rune[0], rune[1], tolerance=2, stack=0, system=system)
+        exp_watch_pause()
+        try:
+            threading.Thread(target=awake_rune_solver).start()
 
-        press_key_with_delay("down", 300)
+            goto_point(rune[0], rune[1], tolerance=2, stack=0, system=system)
 
-        goto_point(rune[0], rune[1], tolerance=2, stack=0, system=system)
+            press_key_with_delay("down", 300)
 
-        autorune()
+            goto_point(rune[0], rune[1], tolerance=2, stack=0, system=system)
 
-        time.sleep(2)
-        clear_rune()
+            autorune()
+
+            time.sleep(2)
+            clear_rune()
+        finally:
+            exp_watch_resume()
 
         return True
     return False
