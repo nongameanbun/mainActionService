@@ -138,7 +138,7 @@ class BuildRunner():
                 Rdelay_2(300)
 
                 running_build.timer.skill_used('exp')
-                send_message(f"[{running_build.build_name}] {cur_cycle} cycle left")
+                send_message(f"[{running_build.name}] {cur_cycle} cycle left")
 
                 set_exp_cycle(cur_cycle-1)
                 return False
